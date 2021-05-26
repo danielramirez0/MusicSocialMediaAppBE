@@ -42,6 +42,27 @@ router.post("/", async (req, res) => {
   }
 });
 
+//post a new post
+router.put("/:id/post", async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(400).send(`The user id "${req.params.id}" does not exist.`);
+
+    const {error} = validatePost(req.body)
+    if (error)
+    return res.status(400).send(error);
+
+    const post = new Post ({
+      body: req.body.body,
+    });
+
+    await post.save();
+    return res.send(post);
+  } catch (ex){
+    return res.status(500).send(`Internal Server Error: ${ex}`);
+  }
+});
+
 //put for post likes
 router.put("/:id/likes", async (req, res) => {
   try {
