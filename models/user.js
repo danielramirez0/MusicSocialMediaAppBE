@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Joi = require("joi");
-const { Friend, friendSchema } = require("./friend");
-const { Post, postSchema } = require("./post");
+const { friendSchema } = require("./friend");
+const { postSchema } = require("./post");
 
 const userSchema = new mongoose.Schema({
   email: { type: String, require: true, minlength: 6, maxlength: 50 },
@@ -26,10 +26,7 @@ function validateUser(user) {
     lastName: Joi.string().min(2).max(50).required(),
     favoriteArtist: Joi.string(),
     favoriteAlbum: Joi.string(),
-    favoriteSong: Joi.string(),
-    friends: [],
-    posts: [],
-    pendingFriends: [],
+    favoriteSong: Joi.string()
   });
   return schema.validate(user);
 }
