@@ -1,5 +1,6 @@
 // const { Comment, Reply, validateComment, validateReply } = require ('../models/comment');
-const { User, Post, validateUser, validatePost, validateFriend } = require("../models/user");
+const { User, validateUser } = require("../models/user");
+const { Post, validatePost } = require("../models/post");
 const express = require("express");
 const router = express.Router();
 
@@ -47,7 +48,7 @@ router.post("/", async (req, res) => {
 });
 
 //post a new post
-router.put("/:id/post", async (req, res) => {
+router.post("/:id/post", async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
     if (!user) return res.status(400).send(`The user id "${req.params.id}" does not exist.`);
@@ -60,8 +61,10 @@ router.put("/:id/post", async (req, res) => {
       body: req.body.body,
     });
 
-    await post.save();
-    return res.send(post);
+    user.posts.push(post);
+    await user.save();
+
+    return res.send(user.posts);
   } catch (ex){
     return res.status(500).send(`Internal Server Error: ${ex}`);
   }
