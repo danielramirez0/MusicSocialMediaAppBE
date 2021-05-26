@@ -3,6 +3,8 @@ const Joi = require("joi");
 
 const postSchema = new mongoose.Schema({
   body: { type: String, required: true },
+  likes: {type: Number, default: 0},
+  dislikes: {type: Number, default: 0}
 });
 
 const post = mongoose.model("Post", postSchema);
@@ -10,6 +12,8 @@ const post = mongoose.model("Post", postSchema);
 const validatePost = (post) => {
   const schema = Joi.object({
     body: Joi.string().required(),
+    likes: Joi.number(),
+    dislikes: Joi.number(),
   });
   return schema.validate(post);
 };

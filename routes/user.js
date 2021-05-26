@@ -1,5 +1,5 @@
 // const { Comment, Reply, validateComment, validateReply } = require ('../models/comment');
-const { User, validateUser } = require("../models/user");
+const { User, Post, validateUser, validatePost, validateFriend } = require("../models/user");
 const express = require("express");
 const router = express.Router();
 
@@ -45,13 +45,13 @@ router.post("/", async (req, res) => {
 //put for likes / dislikes
 router.put("/:id/likes", async (req, res) => {
   try {
-    const comment = await Comment.findById(req.params.id);
-    if (!comment) return res.status(400).send(`The comment id "${req.params.id}" does not exist.`);
+    const post = await Post.findById(req.params.id);
+    if (!post) return res.status(400).send(`The comment id "${req.params.id}" does not exist.`);
 
-    comment.likes++;
+    post.likes++;
 
-    await comment.save();
-    return res.send(comment);
+    await post.save();
+    return res.send(post);
   } catch (ex) {
     return res.status(500).send(`Internal Server Error: ${ex}`);
   }
@@ -59,13 +59,13 @@ router.put("/:id/likes", async (req, res) => {
 
 router.put("/:id/dislikes", async (req, res) => {
   try {
-    const comment = await Comment.findById(req.params.id);
-    if (!comment) return res.status(400).send(`The comment id "${req.params.id}" does not exist.`);
+    const post = await Post.findById(req.params.id);
+    if (!post) return res.status(400).send(`The comment id "${req.params.id}" does not exist.`);
 
-    comment.dislikes++;
+    post.dislikes++;
 
-    await comment.save();
-    return res.send(comment);
+    await post.save();
+    return res.send(post);
   } catch (ex) {
     return res.status(500).send(`Internal Server Error: ${ex}`);
   }
