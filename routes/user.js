@@ -20,13 +20,17 @@ router.post("/", async (req, res) => {
     if (error) return res.status(400).send(error.details[0].message);
 
     let user = await User.findOne({ email: req.body.email });
-    user ? res.statust(400).send("User already registered") : null;
+    if (user)
+    return res.status(400).send("User already registered");
 
     user = new User({
       firstName: req.body.firstName,
       lastName: req.body.lastName,
       email: req.body.email,
       password: req.body.password,
+      favoriteArtist: req.body.favoriteArtist,
+      favoriteAlbum: req.body.favoriteAlbum,
+      favoriteSong: req.body.favoriteSong
     });
 
     await user.save();
