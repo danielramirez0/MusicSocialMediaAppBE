@@ -1,31 +1,42 @@
 // const { Comment, Reply, validateComment, validateReply } = require ('../models/comment');
+const { User, validateUser } = require("../models/user");
 const express = require("express");
 const router = express.Router();
 
-//get all videos
+//get all users
 router.get("/", async (req, res) => {
   try {
-    const comment = await Comment.find();
-    return res.send(comment);
+    const user = await User.find();
+    return res.send(user);
   } catch (ex) {
     return res.status(500).send(`Internal Server Error: ${ex}`);
   }
 });
 
-//post comment
+//register new User
 router.post("/", async (req, res) => {
   try {
-    const { error } = validateComment(req.body);
-    if (error) return res.status(400).send(error);
+    const { error } = validateUser(req.body);
+    if (error) return res.status(400).send(error.details[0].message);
 
-    const comment = new Comment({
-      text: req.body.text,
-      videoId: req.body.videoId,
+    let user = await User.findOne({ email: req.body.email });
+    user ? res.statust(400).send("User already registered") : null;
+
+    user = new User({
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      email: req.body.email,
+      password: req.body.password,
     });
 
-    await comment.save();
+    await user.save();
 
-    return res.send(comment);
+    return res.send({
+      _id: user._id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+    });
   } catch (ex) {
     return res.status(500).send(`Internal Server Error: ${ex}`);
   }

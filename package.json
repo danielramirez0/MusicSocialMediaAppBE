@@ -19,6 +19,7 @@
   "homepage": "https://github.com/danrezz/MusicSocialMediaAppBE#readme",
   "description": "",
   "dependencies": {
+    "bcrypt": "^5.0.1",
     "config": "^3.3.6",
     "cors": "^2.8.5",
     "express": "^4.17.1",
