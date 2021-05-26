@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Joi = require("joi");
-const { Friend } = require("./friend");
-const { Post } = require("./post");
+const { Friend, friendSchema } = require("./friend");
+const { Post, postSchema } = require("./post");
 
 const userSchema = new mongoose.Schema({
   email: { type: String, require: true, minlength: 6, maxlength: 50 },
@@ -11,9 +11,9 @@ const userSchema = new mongoose.Schema({
   favoriteArtist: { type: String },
   favoriteAlbum: { type: String },
   favoriteSong: { type: String },
-  friends: [Friend.Schema],
-  posts: [Post.Schema],
-  pendingFriends: [Friend.Schema],
+  friends: [{type: friendSchema}],
+  posts: [{type: postSchema}],
+  pendingFriends: [{type: friendSchema}],
 });
 
 const user = mongoose.model("User", userSchema);
