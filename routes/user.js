@@ -1,6 +1,7 @@
 // const { Comment, Reply, validateComment, validateReply } = require ('../models/comment');
 const { User, validateUser } = require("../models/user");
 const { Post, validatePost } = require("../models/post");
+const { Friend, validateFriend } = require("../models/friend");
 const express = require("express");
 const router = express.Router();
 
@@ -47,13 +48,43 @@ router.post("/", async (req, res) => {
   }
 });
 
+//post new friend
+router.post("/:userId/:friendId/friends", async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId);
+    if (!user)
+    return res.status(400).send(`The user id "${req.params.userId}" does not exist.`);
+
+    const userFriend = await User.findById(req.params.friendId);
+    if (!userFriend)
+    return res.status(400).send(`The friend user id "${req.params.friendId}" does not exist.`);
+
+    const {error} = validateFriend(req.body);
+    if (error)
+    return res.status(400).send(error);
+
+    const friend = new Friend ({
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      email: req.body.email,
+    });
+
+    user.friends.push(friend);
+    await user.save();
+
+    return res.send(user.friends);
+  } catch (ex) {
+    return res.status(500).send(`Internal Server Error: ${ex}`);
+  }
+});
+
 //post a new post
 router.post("/:id/post", async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
     if (!user) return res.status(400).send(`The user id "${req.params.id}" does not exist.`);
 
-    const {error} = validatePost(req.body)
+    const {error} = validatePost(req.body);
     if (error)
     return res.status(400).send(error);
 
@@ -112,7 +143,7 @@ router.put("/:userId/:postId/dislikes", async (req, res) => {
   }
 });
 
-//post user
+//delete user
 router.delete("/:id", async (req, res) => {
   try {
     const user = await User.findByIdAndRemove(req.params.id);
