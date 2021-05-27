@@ -16,6 +16,15 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.get("/:id", async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    return res.send(user);
+  } catch (ex) {
+    return res.status(500).send(`Internal Server Error: ${ex}`);
+  }
+});
+
 //register new User
 router.post("/", async (req, res) => {
   try {
@@ -64,20 +73,26 @@ router.post("/:userId/friends/:friendId/", auth, async (req, res) => {
     const user = await User.findById(req.params.userId);
     if (!user) return res.status(400).send(`The user id "${req.params.userId}" does not exist.`);
 
-    const userFriend = await User.findById(req.params.friendId);
-    if (!userFriend)
+    let friend = await User.findById(req.params.friendId);
+    if (!friend)
       return res.status(400).send(`The friend user id "${req.params.friendId}" does not exist.`);
 
-    const { error } = validateFriend(req.body);
+    const { error } = validateFriend({
+      _id: `${friend._id}`,
+      name: `${friend.firstName} ${friend.lastName}`,
+    });
+
     if (error) return res.status(400).send(error);
 
-    const friend = new Friend({
-      firstName: req.body.firstName,
-      lastName: req.body.lastName,
-      email: req.body.email,
+    const fullName = `${friend.firstName} ${friend.lastName}`;
+
+    friend = new Friend({
+      _id: req.params.friendId,
+      name: fullName,
     });
 
     user.friends.push(friend);
+
     await user.save();
 
     return res.send(user);

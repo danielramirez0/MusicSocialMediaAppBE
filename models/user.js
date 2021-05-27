@@ -6,14 +6,15 @@ const config = require("config");
 const jwt = require("jsonwebtoken");
 
 const userSchema = new mongoose.Schema({
-  email: { type: String, require: true, minlength: 6, maxlength: 50 },
-  password: { type: String, require: true, minlength: 3, maxlength: 20 },
+  email: { type: String, require: true, minlength: 2, maxlength: 255 },
+  password: { type: String, require: true, minlength: 3, maxlength: 1024 },
   firstName: { type: String, require: true, minlength: 2, maxlength: 50 },
   lastName: { type: String, require: true, minlength: 2, maxlength: 50 },
   favoriteArtist: { type: String },
   favoriteAlbum: { type: String },
   favoriteSong: { type: String },
   friends: [Friend.schema],
+  friendRequests: [Friend.schema],
   posts: [Post.schema],
 });
 userSchema.methods.generateAuthToken = () => {
@@ -36,8 +37,8 @@ const User = mongoose.model("User", userSchema);
 
 function validateUser(user) {
   const schema = Joi.object({
-    email: Joi.string().min(6).max(50).required().email(),
-    password: Joi.string().min(3).max(20).required(),
+    email: Joi.string().min(2).max(255).required().email(),
+    password: Joi.string().min(3).max(1024).required(),
     firstName: Joi.string().min(2).max(50).required(),
     lastName: Joi.string().min(2).max(50).required(),
     favoriteArtist: Joi.string(),

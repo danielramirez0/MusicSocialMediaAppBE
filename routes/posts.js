@@ -1,10 +1,11 @@
 const { User, validateUser } = require("../models/user");
 const { Post, validatePost } = require("../models/post");
+const auth = require("../middleware/auth");
 const express = require("express");
 const router = express.Router();
 
 //post a new post
-router.post("/:id/post", async (req, res) => {
+router.post("/:id/post", auth, async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
     if (!user) return res.status(400).send(`The user id "${req.params.id}" does not exist.`);
@@ -26,7 +27,7 @@ router.post("/:id/post", async (req, res) => {
 });
 
 //put for post likes
-router.put("/:userId/:postId/likes", async (req, res) => {
+router.put("/:userId/:postId/likes", auth, async (req, res) => {
   try {
     const user = await User.findByIdAndUpdate(req.params.userId);
     if (!user) return res.status(400).send(`The user id "${req.params.userId}" does not exist.`);
@@ -47,7 +48,7 @@ router.put("/:userId/:postId/likes", async (req, res) => {
 });
 
 //put for post dislikes
-router.put("/:userId/:postId/dislikes", async (req, res) => {
+router.put("/:userId/:postId/dislikes", auth, async (req, res) => {
   try {
     const user = await User.findByIdAndUpdate(req.params.userId);
     if (!user) return res.status(400).send(`The user id "${req.params.userId}" does not exist.`);
@@ -67,14 +68,14 @@ router.put("/:userId/:postId/dislikes", async (req, res) => {
   }
 });
 
-//delete post
+// delete a post
 router.put("/:userId/:postId", async (req, res) => {
   try {
     const user = await User.findByIdAndUpdate(req.params.userId);
     if (!user) return res.status(400).send(`The post id "${req.params.userId}" does not exist.`);
 
-    const tempPost = user.posts.filter((post) => post._id === req.params.postId);
-    user.posts = tempPost;
+    const filteredPosts = user.posts.filter((post) => post._id === req.params.postId);
+    user.posts = filteredPosts;
 
     await user.save();
     return res.send(user);
