@@ -1,4 +1,4 @@
-const { User, validateUser } = require("../models/user");
+const { User } = require("../models/user");
 const { Post, validatePost } = require("../models/post");
 const auth = require("../middleware/auth");
 const express = require("express");

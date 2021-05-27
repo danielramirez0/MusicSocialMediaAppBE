@@ -9,7 +9,7 @@ const postSchema = new mongoose.Schema({
 
 const Post = mongoose.model("Post", postSchema);
 
-const validatePost = (post) => {
+const validatePost = (Post) => {
   const schema = Joi.object({
     body: Joi.string().required(),
     likes: Joi.number(),
