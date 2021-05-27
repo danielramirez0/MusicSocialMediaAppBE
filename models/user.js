@@ -12,8 +12,7 @@ const userSchema = new mongoose.Schema({
   favoriteAlbum: { type: String },
   favoriteSong: { type: String },
   friends: [{type: friendSchema}],
-  posts: [{type: postSchema}],
-  pendingFriends: [{type: friendSchema}],
+  posts: [{type: postSchema}]
 });
 
 const user = mongoose.model("User", userSchema);
