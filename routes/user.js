@@ -112,24 +112,15 @@ router.put("/:userId/:postId/dislikes", async (req, res) => {
   }
 });
 
-//post reply
-router.post("/:commentId/replies", async (req, res) => {
+//post user
+router.delete("/:id", async (req, res) => {
   try {
-    const { error } = validateReply(req.body);
-    if (error) return res.status(400).send(error);
+    const user = await User.findByIdAndRemove(req.params.id);
 
-    const comment = await Comment.findById(req.params.commentId);
-    if (!comment)
-      return res.status(400).send(`The comment id "${req.params.commentId}" does not exist.`);
-
-    const reply = new Reply({
-      text: req.body.text,
-    });
-
-    comment.replies.push(reply);
-    await comment.save();
-
-    return res.send(comment.replies);
+    if (!user)
+    return res.status(400).send(`The user id "${req.params.id}" does not exist.`);
+    
+    return res.send(user);
   } catch (ex) {
     return res.status(500).send(`Internal Server Error: ${ex}`);
   }
