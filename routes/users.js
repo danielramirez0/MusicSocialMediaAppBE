@@ -1,9 +1,15 @@
 // const { Comment, Reply, validateComment, validateReply } = require ('../models/comment');
 const { User, validateUser } = require("../models/user");
-const { Friend, validateFriend } = require("../models/friend");
+const {
+  Friend,
+  validateFriend,
+  FriendRequest,
+  validateFriendRequest,
+} = require("../models/friend");
 const bcrypt = require("bcrypt");
 const auth = require("../middleware/auth");
 const express = require("express");
+// const { Mongoose } = require("mongoose");
 const router = express.Router();
 
 // get all users
@@ -67,35 +73,49 @@ router.post("/", async (req, res) => {
   }
 });
 
-// add new friend
+// send a friend request
 router.post("/:userId/friends/:friendId/", auth, async (req, res) => {
   try {
-    const user = await User.findById(req.params.userId);
-    if (!user) return res.status(400).send(`The user id "${req.params.userId}" does not exist.`);
+    const sender = await User.findById(req.params.userId);
+    if (!sender) return res.status(400).send(`The user id "${req.params.userId}" does not exist.`);
 
-    let friend = await User.findById(req.params.friendId);
-    if (!friend)
+    const receiver = await User.findById(req.params.friendId);
+    if (!receiver)
       return res.status(400).send(`The friend user id "${req.params.friendId}" does not exist.`);
 
-    const { error } = validateFriend({
-      _id: `${friend._id}`,
-      name: `${friend.firstName} ${friend.lastName}`,
+    let { error } = validateFriend({
+      user_id: receiver._id,
+      name: `${receiver.firstName} ${receiver.lastName}`,
     });
 
     if (error) return res.status(400).send(error);
 
-    const fullName = `${friend.firstName} ${friend.lastName}`;
-
-    friend = new Friend({
-      _id: req.params.friendId,
-      name: fullName,
+    const newFriend = new Friend({
+      user_id: receiver._id,
+      name: `${receiver.firstName} ${receiver.lastName}`,
     });
 
-    user.friends.push(friend);
+    sender.friends.push(newFriend);
 
-    await user.save();
+    await sender.save();
 
-    return res.send(user);
+    let { err } = validateFriendRequest({
+      user_id: sender._id,
+      name: `${sender.firstName} ${sender.lastName}`,
+    });
+
+    if (err) return res.status(400).send(err);
+
+    const inboundFriendRequest = new FriendRequest({
+      user_id: sender._id,
+      name: `${sender.firstName} ${sender.lastName}`,
+    });
+
+    receiver.friendRequests.push(inboundFriendRequest);
+
+    await receiver.save();
+
+    return res.send([sender, receiver]);
   } catch (ex) {
     return res.status(500).send(`Internal Server Error: ${ex}`);
   }

@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const Joi = require("joi");
-const { Friend } = require("./friend");
+const { Friend, FriendRequest } = require("./friend");
 const { Post } = require("./post");
 const config = require("config");
 const jwt = require("jsonwebtoken");
@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema({
   favoriteAlbum: { type: String },
   favoriteSong: { type: String },
   friends: [Friend.schema],
-  friendRequests: [Friend.schema],
+  friendRequests: [FriendRequest.schema],
   posts: [Post.schema],
 });
 userSchema.methods.generateAuthToken = () => {
