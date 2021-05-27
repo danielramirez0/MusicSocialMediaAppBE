@@ -2,6 +2,8 @@ const mongoose = require("mongoose");
 const Joi = require("joi");
 const { Friend } = require("./friend");
 const { Post } = require("./post");
+const config = require("config");
+const jwt = require("jsonwebtoken");
 
 const userSchema = new mongoose.Schema({
   email: { type: String, require: true, minlength: 6, maxlength: 50 },
@@ -14,6 +16,21 @@ const userSchema = new mongoose.Schema({
   friends: [Friend.schema],
   posts: [Post.schema],
 });
+userSchema.methods.generateAuthToken = () => {
+  return jwt.sign(
+    {
+      _id: this._id,
+      firstName: this.firstName,
+      lastName: this.lastName,
+      favoriteArtist: this.favoriteArtist,
+      favoriteAlbum: this.favoriteAlbum,
+      favoriteSong: this.favoriteSong,
+      friends: this.friends,
+      posts: this.posts,
+    },
+    config.get("jwtSecret")
+  );
+};
 
 const User = mongoose.model("User", userSchema);
 
