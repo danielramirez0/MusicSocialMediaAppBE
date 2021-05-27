@@ -136,11 +136,16 @@ router.post("/:commentId/replies", async (req, res) => {
 });
 
 //delete post
-router.delete("/:id", async (req, res) => {
+router.put("/:userId/:postId", async (req, res) => {
   try {
-    const post = await Post.findByIdAndRemove(req.params.id);
-    if (!post) return res.status(400).send(`The comment id "${req.params.id}" does not exist.`);
-    return res.send(post);
+    const user = await User.findByIdAndUpdate(req.params.userId);
+    if (!user) return res.status(400).send(`The post id "${req.params.userId}" does not exist.`);
+
+    const tempPost = user.posts.filter((post) => post._id === req.params.postId);
+    user.posts = tempPost;
+
+    await user.save();
+    return res.send(user);
   } catch (ex) {
     return res.status(500).send(`Internal Server Error: ${ex}`);
   }
