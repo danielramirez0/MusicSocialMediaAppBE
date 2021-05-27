@@ -71,30 +71,42 @@ router.post("/:id/post", async (req, res) => {
 });
 
 //put for post likes
-router.put("/:id/likes", async (req, res) => {
+router.put("/:userId/:postId/likes", async (req, res) => {
   try {
-    const post = await Post.findById(req.params.id);
-    if (!post) return res.status(400).send(`The comment id "${req.params.id}" does not exist.`);
+    const user = await User.findByIdAndUpdate(req.params.userId);
+    if (!user) return res.status(400).send(`The user id "${req.params.userId}" does not exist.`);
 
-    post.likes++;
+    user.posts.filter((post) => {
+      if (post._id == req.params.postId){
+        post.likes ++;
+      }else {
+        return (`The post id "${req.params.postId}" does not exist.`);
+      }
+    })
 
-    await post.save();
-    return res.send(post);
+    await user.save();
+    return res.send(user);
   } catch (ex) {
     return res.status(500).send(`Internal Server Error: ${ex}`);
   }
 });
 
 //put for post dislikes
-router.put("/:id/dislikes", async (req, res) => {
+router.put("/:userId/:postId/dislikes", async (req, res) => {
   try {
-    const post = await Post.findById(req.params.id);
-    if (!post) return res.status(400).send(`The comment id "${req.params.id}" does not exist.`);
+    const user = await User.findByIdAndUpdate(req.params.userId);
+    if (!user) return res.status(400).send(`The user id "${req.params.userId}" does not exist.`);
 
-    post.dislikes++;
+    user.posts.filter((post) => {
+      if (post._id == req.params.postId){
+        post.dislikes ++;
+      }else {
+        return (`The post id "${req.params.postId}" does not exist.`);
+      }
+    })
 
-    await post.save();
-    return res.send(post);
+    await user.save();
+    return res.send(user);
   } catch (ex) {
     return res.status(500).send(`Internal Server Error: ${ex}`);
   }
