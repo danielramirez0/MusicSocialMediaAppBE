@@ -69,7 +69,7 @@ router.put("/:userId/:postId/dislikes", auth, async (req, res) => {
 });
 
 // delete a post
-router.put("/:userId/:postId", async (req, res) => {
+router.put("/:userId/:postId", auth, async (req, res) => {
   try {
     const user = await User.findByIdAndUpdate(req.params.userId);
     if (!user) return res.status(400).send(`The post id "${req.params.userId}" does not exist.`);
