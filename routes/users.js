@@ -1,4 +1,3 @@
-// const { Comment, Reply, validateComment, validateReply } = require ('../models/comment');
 const { User, validateUser } = require("../models/user");
 const {
   Friend,
@@ -9,10 +8,9 @@ const {
 const bcrypt = require("bcrypt");
 const auth = require("../middleware/auth");
 const express = require("express");
-// const { Mongoose } = require("mongoose");
 const router = express.Router();
 
-// get all users
+//get all users
 router.get("/", async (req, res) => {
   try {
     const users = await User.find();
@@ -22,10 +20,37 @@ router.get("/", async (req, res) => {
   }
 });
 
+//get all user data
 router.get("/:id", async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
     return res.send(user);
+  } catch (ex) {
+    return res.status(500).send(`Internal Server Error: ${ex}`);
+  }
+});
+
+//get friends list
+router.get("/:id/friends", auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user)
+    return res.status(400).send(`The user id ${req.params.id} does not exist.`);
+
+    return res.send(user.friends);
+  } catch (ex) {
+    return res.status(500).send(`Internal Server Error: ${ex}`);
+  }
+});
+
+//get list of pending friend requests
+router.get("/:id/friendRequests", auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user)
+    return res.status(400).send(`The user id ${req.params.id} does not exist.`);
+
+    return res.send(user.friendRequests);
   } catch (ex) {
     return res.status(500).send(`Internal Server Error: ${ex}`);
   }
