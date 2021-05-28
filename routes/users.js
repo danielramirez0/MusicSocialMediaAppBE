@@ -73,6 +73,29 @@ router.post("/", async (req, res) => {
   }
 });
 
+//put -- update a user's credentials
+router.put("/:userId", auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.params.userId);
+    if (!user)
+    return res.status(400).send(`The user id "${req.params.userId}" does not exist.`);
+
+    const { error } = validateUser(req.body);
+    if (error) return res.status(400).send(error);
+
+    user.firstName = req.body.firstName;
+    user.lastName = req.body.lastName;
+    user.favoriteArtist = req.body.favoriteArtist;
+    user.favoriteAlbum = req.body.favoriteAlbum;
+    user.favoriteSong = req.body.favoriteSong;
+
+    await user.save();
+    return res.send(user);
+  } catch (ex) {
+    return res.status(500).send(`Internal Server Error: ${ex}`);
+  }
+});
+
 // send a friend request
 router.post("/:userId/friends/:friendId/", auth, async (req, res) => {
   try {
