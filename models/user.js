@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema({
   friendRequests: [FriendRequest.schema],
   posts: [Post.schema],
 });
-userSchema.methods.generateAuthToken = () => {
+userSchema.methods.generateAuthToken = function () {
   return jwt.sign(
     {
       _id: this._id,
