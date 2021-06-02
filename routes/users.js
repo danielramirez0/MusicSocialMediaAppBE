@@ -34,8 +34,7 @@ router.get("/:id", async (req, res) => {
 router.get("/:id/friends", auth, async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
-    if (!user)
-    return res.status(400).send(`The user id ${req.params.id} does not exist.`);
+    if (!user) return res.status(400).send(`The user id ${req.params.id} does not exist.`);
 
     return res.send(user.friends);
   } catch (ex) {
@@ -47,8 +46,7 @@ router.get("/:id/friends", auth, async (req, res) => {
 router.get("/:id/friendRequests", auth, async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
-    if (!user)
-    return res.status(400).send(`The user id ${req.params.id} does not exist.`);
+    if (!user) return res.status(400).send(`The user id ${req.params.id} does not exist.`);
 
     return res.send(user.friendRequests);
   } catch (ex) {
@@ -79,20 +77,14 @@ router.post("/", async (req, res) => {
 
     await user.save();
 
+    const { password, ...sendUser } = user._doc;
+
     const token = user.generateAuthToken();
 
     return res
       .header("x-auth-token", token)
       .header("access-control-expose-headers", "x-auth-token")
-      .send({
-        _id: user._id,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        favoriteArtist: user.favoriteArtist,
-        favoriteAlbum: user.favoriteAlbum,
-        favoriteSong: user.favoriteSong,
-      });
+      .send(sendUser);
   } catch (ex) {
     return res.status(500).send(`Internal Server Error: ${ex}`);
   }
@@ -102,26 +94,25 @@ router.post("/", async (req, res) => {
 router.put("/:userId", auth, async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
-    if (!user)
-    return res.status(400).send(`The user id "${req.params.userId}" does not exist.`);
+    if (!user) return res.status(400).send(`The user id "${req.params.userId}" does not exist.`);
     console.log(user);
 
-/*     const { error } = validateUser(req.body);
+    /*     const { error } = validateUser(req.body);
     if (error) return res.status(400).send(error); */
 
-    if (req.body.firstName != null){
-      user.firstName=req.body.firstName;
-    } 
-    if (req.body.lastName != null){
+    if (req.body.firstName != null) {
+      user.firstName = req.body.firstName;
+    }
+    if (req.body.lastName != null) {
       user.lastName = req.body.lastName;
     }
-    if (req.body.favoriteArtist != null){
+    if (req.body.favoriteArtist != null) {
       user.favoriteArtist = req.body.favoriteArtist;
     }
-    if (req.body.favoriteAlbum != null){
+    if (req.body.favoriteAlbum != null) {
       user.favoriteAlbum = req.body.favoriteAlbum;
     }
-    if (req.body.favoriteSong != null){
+    if (req.body.favoriteSong != null) {
       user.favoriteSong = req.body.favoriteSong;
     }
 
