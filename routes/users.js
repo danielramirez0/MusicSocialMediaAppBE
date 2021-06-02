@@ -104,15 +104,26 @@ router.put("/:userId", auth, async (req, res) => {
     const user = await User.findById(req.params.userId);
     if (!user)
     return res.status(400).send(`The user id "${req.params.userId}" does not exist.`);
+    console.log(user);
 
-    const { error } = validateUser(req.body);
-    if (error) return res.status(400).send(error);
+/*     const { error } = validateUser(req.body);
+    if (error) return res.status(400).send(error); */
 
-    user.firstName = req.body.firstName;
-    user.lastName = req.body.lastName;
-    user.favoriteArtist = req.body.favoriteArtist;
-    user.favoriteAlbum = req.body.favoriteAlbum;
-    user.favoriteSong = req.body.favoriteSong;
+    if (req.body.firstName != null){
+      user.firstName=req.body.firstName;
+    } 
+    if (req.body.lastName != null){
+      user.lastName = req.body.lastName;
+    }
+    if (req.body.favoriteArtist != null){
+      user.favoriteArtist = req.body.favoriteArtist;
+    }
+    if (req.body.favoriteAlbum != null){
+      user.favoriteAlbum = req.body.favoriteAlbum;
+    }
+    if (req.body.favoriteSong != null){
+      user.favoriteSong = req.body.favoriteSong;
+    }
 
     await user.save();
     return res.send(user);
