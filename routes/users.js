@@ -5,10 +5,23 @@ const {
   FriendRequest,
   validateFriendRequest,
 } = require("../models/friend");
+const { Photo } = require("../models/photo");
 const bcrypt = require("bcrypt");
 const auth = require("../middleware/auth");
 const express = require("express");
 const router = express.Router();
+const multer = require('multer');
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, './uploads');
+    },
+    filename: (req, file, cb) => {   
+        cb(null, file.originalname);
+    }
+});
+
+const upload = multer({ storage: storage });
 
 //get all users
 router.get("/", async (req, res) => {
@@ -54,6 +67,23 @@ router.get("/:id/friendRequests", auth, async (req, res) => {
   }
 });
 
+router.post("/:id/uploadPhoto", upload.single('photo'), async (req, res) => {
+  try {
+    let user = await User.findById(req.params.id);
+    if (!user) return res.status(400).send(`The user id ${req.params.id} does not exist.`);
+    console.log(req);
+    const photoUpload = new Photo ({
+      photoImage: req.file.filename
+    })
+
+    user.photoImage.push(photoUpload);
+    await user.save();
+    return res.send(user.photoImage);
+  } catch (ex) {
+    return res.status(500).send(`Internal Server Error: ${ex}`);
+  }
+})
+
 //register new User
 router.post("/", async (req, res) => {
   try {
@@ -64,6 +94,7 @@ router.post("/", async (req, res) => {
     if (user) return res.status(400).send("User already registered");
 
     const salt = await bcrypt.genSalt(10);
+    console.log(JSON.stringify(req.file));
 
     user = new User({
       firstName: req.body.firstName,
@@ -72,7 +103,7 @@ router.post("/", async (req, res) => {
       password: await bcrypt.hash(req.body.password, salt),
       favoriteArtist: req.body.favoriteArtist,
       favoriteAlbum: req.body.favoriteAlbum,
-      favoriteSong: req.body.favoriteSong,
+      favoriteSong: req.body.favoriteSong
     });
 
     await user.save();

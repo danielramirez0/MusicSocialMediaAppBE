@@ -1,0 +1,11 @@
+const mongoose = require("mongoose");
+const Joi = require("joi");
+
+const photoSchema = new mongoose.Schema({
+    photoImage: {type: String},
+});
+
+const Photo = mongoose.model("Photo", photoSchema);
+
+exports.photoSchema = photoSchema;
+exports.Photo = Photo;
