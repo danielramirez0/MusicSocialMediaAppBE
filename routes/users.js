@@ -10,15 +10,15 @@ const bcrypt = require("bcrypt");
 const auth = require("../middleware/auth");
 const express = require("express");
 const router = express.Router();
-const multer = require('multer');
+const multer = require("multer");
 
 const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, './uploads');
-    },
-    filename: (req, file, cb) => {   
-        cb(null, file.originalname);
-    }
+  destination: (req, file, cb) => {
+    cb(null, "./uploads");
+  },
+  filename: (req, file, cb) => {
+    cb(null, file.originalname);
+  },
 });
 
 const upload = multer({ storage: storage });
@@ -33,7 +33,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-//get all user data
+//get a user
 router.get("/:id", async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -67,14 +67,14 @@ router.get("/:id/friendRequests", auth, async (req, res) => {
   }
 });
 
-router.post("/:id/uploadPhoto", upload.single('photo'), async (req, res) => {
+router.post("/:id/uploadPhoto", upload.single("photo"), async (req, res) => {
   try {
     let user = await User.findById(req.params.id);
     if (!user) return res.status(400).send(`The user id ${req.params.id} does not exist.`);
     console.log(req);
-    const photoUpload = new Photo ({
-      photoImage: req.file.filename
-    })
+    const photoUpload = new Photo({
+      photoImage: req.file.filename,
+    });
 
     user.photoImage.push(photoUpload);
     await user.save();
@@ -82,7 +82,7 @@ router.post("/:id/uploadPhoto", upload.single('photo'), async (req, res) => {
   } catch (ex) {
     return res.status(500).send(`Internal Server Error: ${ex}`);
   }
-})
+});
 
 //register new User
 router.post("/", async (req, res) => {
@@ -103,7 +103,7 @@ router.post("/", async (req, res) => {
       password: await bcrypt.hash(req.body.password, salt),
       favoriteArtist: req.body.favoriteArtist,
       favoriteAlbum: req.body.favoriteAlbum,
-      favoriteSong: req.body.favoriteSong
+      favoriteSong: req.body.favoriteSong,
     });
 
     await user.save();
