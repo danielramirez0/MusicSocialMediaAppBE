@@ -71,7 +71,7 @@ router.post("/:id/uploadPhoto", upload.single("photo"), async (req, res) => {
   try {
     let user = await User.findById(req.params.id);
     if (!user) return res.status(400).send(`The user id ${req.params.id} does not exist.`);
-    console.log(req);
+   
     const photoUpload = new Photo({
       photoImage: req.file.filename,
     });

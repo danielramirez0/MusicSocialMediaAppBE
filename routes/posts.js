@@ -22,8 +22,8 @@ router.post("/:id/post", async (req, res) => {
     const user = await User.findById(req.params.id);
     if (!user) return res.status(400).send(`The user id "${req.params.id}" does not exist.`);
 
-    // const { error } = validatePost(req.body);
-    // if (error) return res.status(400).send(error);
+    const { error } = validatePost(req.body);
+    if (error) return res.status(400).send(error);
 
     const post = new Post({
       time: req.body.time,
@@ -86,9 +86,9 @@ router.put("/:userId/:postId/dislikes", auth, async (req, res) => {
 router.put("/:userId/:postId", auth, async (req, res) => {
   try {
     const user = await User.findByIdAndUpdate(req.params.userId);
-    if (!user) return res.status(400).send(`The post id "${req.params.userId}" does not exist.`);
+    if (!user) return res.status(400).send(`The user id "${req.params.userId}" does not exist.`);
 
-    const filteredPosts = user.posts.filter((post) => post._id === req.params.postId);
+    const filteredPosts = user.posts.filter((post) => post._id != req.params.postId);
     user.posts = filteredPosts;
 
     await user.save();
