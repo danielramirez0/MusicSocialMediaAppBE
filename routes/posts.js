@@ -17,7 +17,7 @@ router.get("/:id", async (req, res) => {
 })
 
 //post a new post
-router.post("/:id/post", auth, async (req, res) => {
+router.post("/:id/post", async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
     if (!user) return res.status(400).send(`The user id "${req.params.id}" does not exist.`);
