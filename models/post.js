@@ -7,6 +7,7 @@ const postSchema = new mongoose.Schema({
   text: { type: String, required: true },
   likes: { type: Number, default: 0 },
   dislikes: { type: Number, default: 0 },
+  date: {type: Date, default:Date.now},
 });
 
 const Post = mongoose.model("Post", postSchema);

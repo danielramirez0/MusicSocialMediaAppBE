@@ -122,14 +122,11 @@ router.post("/", async (req, res) => {
 });
 
 //put -- update a user's credentials
-router.put("/:userId", auth, async (req, res) => {
+router.put("/:userId", async (req, res) => {
   try {
     const user = await User.findById(req.params.userId);
     if (!user) return res.status(400).send(`The user id "${req.params.userId}" does not exist.`);
     console.log(user);
-
-    /*     const { error } = validateUser(req.body);
-    if (error) return res.status(400).send(error); */
 
     if (req.body.firstName != null) {
       user.firstName = req.body.firstName;
