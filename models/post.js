@@ -2,21 +2,25 @@ const mongoose = require("mongoose");
 const Joi = require("joi");
 
 const postSchema = new mongoose.Schema({
-  body: { type: String, required: true },
+  time: { type: String, required: true },
+  mood: { type: String, required: true },
+  text: { type: String, required: true },
   likes: { type: Number, default: 0 },
   dislikes: { type: Number, default: 0 },
 });
 
 const Post = mongoose.model("Post", postSchema);
 
-const validatePost = (Post) => {
+function validatePost(post) {
   const schema = Joi.object({
-    body: Joi.string().required(),
+    time: Joi.string().required(),
+    mood: Joi.string().required(),
+    text: Joi.string().required(),
     likes: Joi.number(),
     dislikes: Joi.number(),
   });
-  return schema.validate(Post);
-};
+  return schema.validate(post);
+}
 
 exports.Post = Post;
 exports.validatePost = validatePost;

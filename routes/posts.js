@@ -14,7 +14,7 @@ router.get("/:id", async (req, res) => {
   } catch (ex) {
     return res.status(500).send(`Internal Server Error: ${ex}`);
   }
-})
+});
 
 //post a new post
 router.post("/:id/post", auth, async (req, res) => {
@@ -22,11 +22,13 @@ router.post("/:id/post", auth, async (req, res) => {
     const user = await User.findById(req.params.id);
     if (!user) return res.status(400).send(`The user id "${req.params.id}" does not exist.`);
 
-    const { error } = validatePost(req.body);
-    if (error) return res.status(400).send(error);
+    // const { error } = validatePost(req.body);
+    // if (error) return res.status(400).send(error);
 
     const post = new Post({
-      body: req.body.body,
+      time: req.body.time,
+      mood: req.body.mood,
+      text: req.body.text,
     });
 
     user.posts.push(post);
