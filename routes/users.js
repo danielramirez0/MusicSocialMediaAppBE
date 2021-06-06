@@ -232,6 +232,7 @@ router.post("/:userId/:friendId/addFriend", auth, async (req, res) => {
     const newFriend = new Friend({
       user_id: accepted._id,
       name: `${accepted.firstName} ${accepted.lastName}`,
+      pending: false
     });
 
     user.friends.push(newFriend);
