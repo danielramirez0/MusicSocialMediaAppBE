@@ -259,6 +259,22 @@ router.put("/:userId/:friendId/deleteFriend", auth, async(req, res) => {
   }
   });
 
+//delete friend from friend requests
+router.put("/:userId/:friendId/deleteRequest", auth, async(req, res) => {
+  try{
+    const user = await User.findById(req.params.userId);
+    if (!user) return res.status(400).send(`The user id "${req.params.userId}" does not exist.`);
+
+    const filteredFriend = user.friendRequests.filter((friend) => friend._id != req.params.friendId);
+    user.friendRequests = filteredFriend;
+
+    await user.save();
+    return res.send(user);
+  } catch (ex) {
+    return res.status(500).send(`Internal Server Error: ${ex}`);
+  }
+  });
+
 //delete user
 router.delete("/:id", async (req, res) => {
   try {
