@@ -67,7 +67,7 @@ router.get("/:id/friendRequests", auth, async (req, res) => {
   }
 });
 
-//get the photo
+/* //get the photo
 router.get("/:id/photo", async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -85,7 +85,7 @@ router.get("/:id/photo", async (req, res) => {
   } catch (ex) {
     return res.status(500).send(`Internal Server Error: ${ex}`);
   }
-});
+}); */
 
 //post a new photo
 router.post("/:id/uploadPhoto", upload.single("photo"), async (req, res) => {
@@ -242,6 +242,22 @@ router.post("/:userId/:friendId/addFriend", auth, async (req, res) => {
   return res.status(500).send(`Internal Server Error: ${ex}`);
 }
 });
+
+//delete friend
+router.put("/:userId/:friendId/deleteFriend", auth, async(req, res) => {
+  try{
+    const user = await User.findById(req.params.userId);
+    if (!user) return res.status(400).send(`The user id "${req.params.userId}" does not exist.`);
+
+    const filteredFriend = user.friends.filter((friend) => friend._id != req.params.friendId);
+    user.friends = filteredFriend;
+
+    await user.save();
+    return res.send(user);
+  } catch (ex) {
+    return res.status(500).send(`Internal Server Error: ${ex}`);
+  }
+  });
 
 //delete user
 router.delete("/:id", async (req, res) => {
