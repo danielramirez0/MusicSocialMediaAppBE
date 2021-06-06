@@ -31,6 +31,7 @@ userSchema.methods.generateAuthToken = function () {
       favoriteSong: this.favoriteSong,
       friends: this.friends,
       posts: this.posts,
+      photoImage: this.photoImage,
     },
     config.get("jwtSecret")
   );

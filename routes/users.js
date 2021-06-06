@@ -67,6 +67,27 @@ router.get("/:id/friendRequests", auth, async (req, res) => {
   }
 });
 
+//get the photo
+router.get("/:id/photo", async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user)
+    return res.status(400).send(`The user id ${req.params.id} does not exist.`);
+
+    Image.findOne({}, function (err, img){
+      if (err)
+        res.send(err);
+
+        console.log(img);
+        res.contentType('json');
+        res.send(img);
+    });
+  } catch (ex) {
+    return res.status(500).send(`Internal Server Error: ${ex}`);
+  }
+});
+
+//post a new photo
 router.post("/:id/uploadPhoto", upload.single("photo"), async (req, res) => {
   try {
     let user = await User.findById(req.params.id);
@@ -197,6 +218,28 @@ router.post("/:userId/friends/:friendId/", auth, async (req, res) => {
   } catch (ex) {
     return res.status(500).send(`Internal Server Error: ${ex}`);
   }
+});
+
+//post friend
+router.post("/:userId/:friendId/addFriend", auth, async (req, res) => {
+  try{
+    const user = await User.findById(req.params.userId);
+    if (!user) return res.status(400).send(`The user id "${req.params.userId}" does not exist.`);
+
+    const accepted = await User.findById(req.params.friendId);
+    if (!accepted) return res.status(400).send(`The user id "${req.params.friendId} does not exist.`);
+
+    const newFriend = new Friend({
+      user_id: accepted._id,
+      name: `${accepted.firstName} ${accepted.lastName}`,
+    });
+
+    user.friends.push(newFriend);
+    await user.save();
+    return res.send(user);
+} catch (ex) {
+  return res.status(500).send(`Internal Server Error: ${ex}`);
+}
 });
 
 //delete user
