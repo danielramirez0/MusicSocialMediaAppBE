@@ -115,7 +115,6 @@ router.post("/", async (req, res) => {
     if (user) return res.status(400).send("User already registered");
 
     const salt = await bcrypt.genSalt(10);
-    console.log(JSON.stringify(req.file));
 
     user = new User({
       firstName: req.body.firstName,
@@ -251,6 +250,32 @@ router.put("/:userId/:friendId/deleteFriend", auth, async(req, res) => {
 
     const filteredFriend = user.friends.filter((friend) => friend._id != req.params.friendId);
     user.friends = filteredFriend;
+
+    await user.save();
+    return res.send(user);
+  } catch (ex) {
+    return res.status(500).send(`Internal Server Error: ${ex}`);
+  }
+  });
+
+  //delete friend
+router.put("/:userId/:friendId/deletePending", auth, async(req, res) => {
+  try{
+    const user = await User.findById(req.params.userId);
+    if (!user) return res.status(400).send(`The user id "${req.params.userId}" does not exist.`);
+
+    const falseFriend = user.friends.filter((friend) => friend.pending === false);
+    console.log(falseFriend);
+
+    const trueFriend = user.friends.filter((friend) => friend.pending === true);
+    console.log(trueFriend);
+
+    const filteredFriend = trueFriend.filter((friend) => friend.user_id != req.params.friendId);
+    console.log(filteredFriend);
+
+    Array.prototype.push.apply(falseFriend, filteredFriend);
+    console.log(falseFriend);
+    user.friends = falseFriend;
 
     await user.save();
     return res.send(user);
